@@ -38,25 +38,13 @@ def load_model(filepath):
 class UpstreamExpert(UpstreamBase):
     def __init__(self, ckpt, **kwargs):
         super().__init__(**kwargs)
-        assert version.parse(fairseq.__version__) > version.parse(
-            "0.10.2"
-        ), "Please install the fairseq master branch."
 
         model, cfg, task = load_model(ckpt)
         self.model = model
         self.task = task
 
-        if len(self.hooks) == 0:
-            module_name = "self.model.encoder.layers"
-            for module_id in range(len(eval(module_name))):
-                self.add_hook(
-                    f"{module_name}[{module_id}]",
-                    lambda input, output: input[0].transpose(0, 1),
-                )
-            self.add_hook("self.model.encoder", lambda input, output: output[0])
-
     def forward(self, wavs):
-        if self.task.cfg.normalize:
+        if self.task.normalize:
             wavs = [F.layer_norm(wav, wav.shape) for wav in wavs]
 
         device = wavs[0].device
@@ -75,4 +63,3 @@ class UpstreamExpert(UpstreamBase):
         return {
             "default": features,
         }
-
