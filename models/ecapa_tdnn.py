@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchaudio.transforms as trans
-from utils import UpstreamExpert
+from .utils import UpstreamExpert
 import s3prl.hub as hub
 
 

@@ -1,9 +1,11 @@
-import soundfile as sf
 import torch
-import fire
-import torch.nn.functional as F
+
+# import fire
+from torchaudio import load
 from torchaudio.transforms import Resample
 from models.ecapa_tdnn import ECAPA_TDNN_SMALL
+
+import torch.nn.functional as F
 
 MODEL_LIST = [
     "ecapa_tdnn",
@@ -39,7 +41,7 @@ def init_model(model_name, checkpoint=None):
     elif model_name == "wav2vec2_xlsr":
         config_path = None
         model = ECAPA_TDNN_SMALL(
-            feat_dim=1024, feat_type="wav2vec2_xlsr", config_path=config_path
+            feat_dim=1024, feat_type="xlsr_53", config_path=config_path
         )
     else:
         model = ECAPA_TDNN_SMALL(feat_dim=40, feat_type="fbank")
@@ -54,14 +56,11 @@ def verification(model_name, wav1, wav2, use_gpu=True, checkpoint=None):
 
     assert model_name in MODEL_LIST, "The model_name should be in {}".format(MODEL_LIST)
     model = init_model(model_name, checkpoint)
-    print("here")
-    wav1, sr1 = sf.read(wav1)
-    wav2, sr2 = sf.read(wav2)
+    wav1, sr1 = load(wav1)
+    wav2, sr2 = load(wav2)
 
-    wav1 = torch.from_numpy(wav1).unsqueeze(0).float()
-    wav2 = torch.from_numpy(wav2).unsqueeze(0).float()
-    resample1 = Resample(orig_freq=sr1, new_freq=16000)
-    resample2 = Resample(orig_freq=sr2, new_freq=16000)
+    resample1 = Resample(orig_freq=int(sr1), new_freq=16000)
+    resample2 = Resample(orig_freq=int(sr2), new_freq=16000)
     wav1 = resample1(wav1)
     wav2 = resample2(wav2)
 
@@ -76,6 +75,7 @@ def verification(model_name, wav1, wav2, use_gpu=True, checkpoint=None):
         emb2 = model(wav2)
 
     sim = F.cosine_similarity(emb1, emb2)
+    print(model_name)
     print(
         "The similarity score between two audios is {:.4f} (-1.0, 1.0).".format(
             sim[0].item()
@@ -85,9 +85,16 @@ def verification(model_name, wav1, wav2, use_gpu=True, checkpoint=None):
 
 if __name__ == "__main__":
     # fire.Fire(verification)
-    verification(
-        model_name="wavlm_base_plus",
-        wav1="/mnt/c/Users/KHADGA JYOTH ALLI/Desktop/programming/Class Work/IITJ/Speech Understanding/Assignment 2/trial_wavs/hn8GyCJIfLM_0000012.wav",
-        wav2="/mnt/c/Users/KHADGA JYOTH ALLI/Desktop/programming/Class Work/IITJ/Speech Understanding/Assignment 2/trial_wavs/xTOk1Jz-F_g_0000015.wav",
-        checkpoint="/mnt/c/Users/KHADGA JYOTH ALLI/Desktop/programming/Class Work/IITJ/Speech Understanding/Assignment 2/model_checkpoints/wavlm_base_plus_nofinetune.pth",
-    )
+    models = {
+        "wavlm_base_plus": "./model_checkpoints/wavlm_base_plus_nofinetune.pth",
+        "wavlm_large": "./model_checkpoints/wavlm_large_nofinetune.pth",
+        "hubert_large": "./model_checkpoints/HuBERT_large_SV_fixed.th",
+        "wav2vec2_xlsr": "./model_checkpoints/wav2vec2_xlsr_SV_fixed.th",
+    }
+    for model_name, chkpt in models.items():
+        verification(
+            model_name=model_name,
+            wav1="/mnt/c/Users/KHADGA JYOTH ALLI/Desktop/programming/Class Work/IITJ/Speech Understanding/Assignment 2/trial_wavs/hn8GyCJIfLM_0000012.wav",
+            wav2="/mnt/c/Users/KHADGA JYOTH ALLI/Desktop/programming/Class Work/IITJ/Speech Understanding/Assignment 2/trial_wavs/xTOk1Jz-F_g_0000015.wav",
+            checkpoint=chkpt,
+        )
