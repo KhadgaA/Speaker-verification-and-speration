@@ -10,6 +10,7 @@ import torch.nn.functional as F
 
 from tqdm import tqdm
 from compute_eer import eer
+from compute_eer_ecapa import eval_network
 import argparse
 
 MODEL_LIST = [
@@ -116,15 +117,15 @@ if __name__ == "__main__":
         "hubert_large": "./model_checkpoints/HuBERT_large_SV_fixed.th",
         "wav2vec2_xlsr": "./model_checkpoints/wav2vec2_xlsr_SV_fixed.th",
     }
-    voxceleb_hard = torchaudio.datasets.VoxCeleb1Verification(
-        r"/mnt/d/programming/datasets/VoxCeleb",
-        download=True,
-        meta_url="/mnt/d/programming/datasets/VoxCeleb/list_test_hard2.txt",
-    )
+    # voxceleb_hard = torchaudio.datasets.VoxCeleb1Verification(
+    #     r"/mnt/d/programming/datasets/VoxCeleb",
+    #     download=True,
+    #     meta_url="/mnt/d/programming/datasets/VoxCeleb/list_test_hard2.txt",
+    # )
 
-    test_loader = torch.utils.data.DataLoader(
-        voxceleb_hard, batch_size=1, shuffle=False
-    )
+    # test_loader = torch.utils.data.DataLoader(
+    #     voxceleb_hard, batch_size=1, shuffle=False
+    # )
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model", type=str, default="wavlm_base_plus", help="Model name"
@@ -137,9 +138,16 @@ if __name__ == "__main__":
 
     # print(chkpts)
     # for model_name, chkpt in models.items():
-    evaluation(
-        model_names=model_names,
-        checkpoints=models,
-        loader=test_loader,
-        n_samples=args.n_samples,
+    # evaluation(
+    #     model_names=model_names,
+    #     checkpoints=models,
+    #     loader=test_loader,
+    #     n_samples=args.n_samples,
+    # )
+    EER, minDCF = eval_network(
+        init_model(model_names[0], models[model_names[0]]).cuda(),
+        "/mnt/d/programming/datasets/VoxCeleb/list_test_hard2.txt",
+        "/mnt/d/programming/datasets/VoxCeleb/wav/",
     )
+
+    print(f"model = {model_names[0]},EER = {EER}, minDCF = {minDCF}")
