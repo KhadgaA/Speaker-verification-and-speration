@@ -17,4 +17,4 @@ module load anaconda/3
 eval "$(conda shell.bash hook)"
 conda activate speech_env
 export TORCHAUDIO_USE_BACKEND_DISPATCHER=1
-python eval_model.py --model wavlm_base_plus  &> wavlm_base_plus.txt 
+python eval_model.py --model wavlm_base_plus  &> wavlm_base_plus_full.txt 

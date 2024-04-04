@@ -6,4 +6,5 @@ vox1_dev_wav_partac
 vox1_dev_wav_partad
 fairseq
 model_checkpoints
+*.log
 __pycache__
