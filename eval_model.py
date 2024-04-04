@@ -60,50 +60,6 @@ def init_model(model_name, checkpoint=None):
         model.load_state_dict(state_dict["model"], strict=False)
     return model
 
-
-# def evaluation(model_names, loader,device, checkpoints=None, n_samples=-1):
-#     models = torch.nn.ModuleList()
-#     for model_name in model_names:
-#         assert model_name in MODEL_LIST, "The model_name should be in {}".format(
-#             MODEL_LIST
-#         )
-#         print(model_name)
-#         model = init_model(model_name, checkpoints[model_name])
-#         model.eval()
-#         models.append(model)
-
-#     models = models.to(device)
-#     test_scores = {model_name: [] for model_name in model_names}
-#     test_labels = {model_name: [] for model_name in model_names}
-#     i = 0
-#     for wav1, wav2, sr, label, *_ in tqdm(loader):
-
-#         wav1 = wav1.squeeze(0)
-#         wav2 = wav2.squeeze(0)
-
-#         wav1 = wav1.to(device)
-#         wav2 = wav2.to(device)
-
-#         for model_name, model in zip(model_names, models):
-#             with torch.no_grad():
-#                 emb1 = model(wav1)
-#                 emb2 = model(wav2)
-
-#             sim = F.cosine_similarity(emb1, emb2)
-#             test_scores[model_name].append(sim)
-#             test_labels[model_name].append(label)
-#         i += 1
-#         if i == n_samples:
-#             break
-#     for model_name in model_names:
-#         equal_error_rate, threshold = eer(
-#             test_labels[model_name], test_scores[model_name]
-#         )
-#         print(
-#             f"model = {model_name}, equal error rate = {equal_error_rate}, threshold = {threshold}"
-#         )
-
-
 if __name__ == "__main__":
     # fire.Fire(verification)
     models = {
