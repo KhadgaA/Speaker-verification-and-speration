@@ -1,13 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=test_eval 	# Job name
+#SBATCH --job-name=wavlm_large 	# Job name
 #SBATCH --partition=gpu2 		#Partition name can be test/small/medium/large/gpu/gpu2 #Partition “gpu or gpu2” should be used only for gpu jobs
 #SBATCH --nodes=1 				# Run all processes on a single node
 #SBATCH --ntasks=1 				# Run a single task
 #SBATCH --cpus-per-task=4 		# Number of CPU cores per task
 #SBATCH --gres=gpu:1  			# Include gpu for the task (only for GPU jobs)
-#SBATCH --mem=8gb 				# Total memory limit (optional)
-#SBATCH --time=00:05:00 		# Time limit hrs:min:sec (optional)
-#SBATCH --output=first_%j.log 	# Standard output and error log
+#SBATCH --mem=16gb 				# Total memory limit (optional)
+#SBATCH --output=./logs/first_%j.log 	# Standard output and error log
 date;hostname;pwd
 # which gpu node was used
 echo "Running on host" $(hostname)
@@ -18,5 +17,9 @@ printenv | grep -i slurm | sort
 module load anaconda/3
 eval "$(conda shell.bash hook)"
 conda activate speech_env
-export TORCHAUDIO_USE_BACKEND_DISPATCHER=1
-python eval_model.py --n_samples 1000 &> trail.txt 
+export TORCHAUDIO_USE_BACKEND_DISPATCHER=1 
+
+srun -n 1 -c 1 --exclusive python eval_model.py --model wavlm_large &> wavlm_large_full.txt &
+srun -n 1 -c 1 --exclusive python eval_model.py --model hubert_large  &> hubert_large_full.txt &
+srun -n 1 -c 1 --exclusive python eval_model.py --model wavlm_base_plus  &> wavlm_base_plus_full.txt &
+wait
