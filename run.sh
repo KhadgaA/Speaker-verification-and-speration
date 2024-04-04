@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=4 		# Number of CPU cores per task
 #SBATCH --gres=gpu:1  			# Include gpu for the task (only for GPU jobs)
 #SBATCH --mem=16gb 				# Total memory limit (optional)
-#SBATCH --output=first_%j.log 	# Standard output and error log
+#SBATCH --output=./logs/first_%j.log 	# Standard output and error log
 date;hostname;pwd
 # which gpu node was used
 echo "Running on host" $(hostname)
