@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --time=00:00:40
+#SBATCH --ntasks=1
+#SBATCH --job-name=gpu_check
+#SBATCH --output=gpu.%j.out
+#SBATCH --error=gpu.%j.err
+#SBATCH --gres=gpu:1
+#SBATCH --account=scw1901
+#SBATCH --partition=accel_ai
+
+module load anaconda/3
+source activate base
+python gpu.py

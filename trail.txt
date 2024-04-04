@@ -1,0 +1,15 @@
+/iitjhome/m23csa003/.conda/envs/speech_env/lib/python3.10/site-packages/torchaudio/backend/utils.py:48: UserWarning: set_audio_backend is a no-op when the I/O backend dispatcher is enabled.
+  warnings.warn("set_audio_backend is a no-op when the I/O backend dispatcher is enabled.")
+ESPnet is not installed, cannot use espnet_hubert upstream
+Using cache found in /iitjhome/m23csa003/.cache/torch/hub/s3prl_s3prl_main
+/iitjhome/m23csa003/.conda/envs/speech_env/lib/python3.10/site-packages/torch/nn/functional.py:4999: UserWarning: Support for mismatched key_padding_mask and attn_mask is deprecated. Use same type for both instead.
+  warnings.warn(
+data_correctly parsed
+cuda
+  0%|          | 0/14 [00:00<?, ?it/s]  7%|▋         | 1/14 [00:05<01:07,  5.16s/it] 21%|██▏       | 3/14 [00:05<00:15,  1.39s/it] 36%|███▌      | 5/14 [00:05<00:06,  1.41it/s] 50%|█████     | 7/14 [00:05<00:03,  2.30it/s] 64%|██████▍   | 9/14 [00:05<00:01,  3.41it/s] 79%|███████▊  | 11/14 [00:05<00:00,  4.71it/s] 93%|█████████▎| 13/14 [00:05<00:00,  6.31it/s]100%|██████████| 14/14 [00:05<00:00,  2.35it/s]
+Traceback (most recent call last):
+  File "/iitjhome/m23csa003/speech/eval_model.py", line 150, in <module>
+    EER, minDCF = eval_network(
+  File "/iitjhome/m23csa003/speech/compute_eer_ecapa.py", line 48, in eval_network
+    embedding_21, embedding_22 = embeddings[line.split()[2]]
+KeyError: 'id10425/kV-qT4iLGTs/00002.wav'
