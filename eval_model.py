@@ -11,7 +11,10 @@ import torch.nn.functional as F
 from tqdm import tqdm
 from compute_eer import eer
 from compute_eer_ecapa import eval_network
+
+# from compute_ecapa_multiprocess import eval_network
 import argparse
+import os
 
 MODEL_LIST = [
     "ecapa_tdnn",
