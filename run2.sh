@@ -17,4 +17,4 @@ module load anaconda/3
 eval "$(conda shell.bash hook)"
 conda activate speech_env
 export TORCHAUDIO_USE_BACKEND_DISPATCHER=1
-python eval_model.py --model hubert_large  &> hubert_large.txt 
+python eval_model.py --model hubert_large  &> hubert_large_full.txt 

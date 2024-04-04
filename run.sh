@@ -17,5 +17,9 @@ printenv | grep -i slurm | sort
 module load anaconda/3
 eval "$(conda shell.bash hook)"
 conda activate speech_env
-export TORCHAUDIO_USE_BACKEND_DISPATCHER=1
-python eval_model.py --model wavlm_large  &> wavlm_large.txt 
+export TORCHAUDIO_USE_BACKEND_DISPATCHER=1 
+
+srun -n 1 -c 1 --exclusive python eval_model.py --model wavlm_large &> wavlm_large_full.txt &
+srun -n 1 -c 1 --exclusive python eval_model.py --model hubert_large  &> hubert_large_full.txt &
+srun -n 1 -c 1 --exclusive python eval_model.py --model wavlm_base_plus  &> wavlm_base_plus_full.txt &
+wait

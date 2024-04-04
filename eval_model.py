@@ -151,7 +151,8 @@ if __name__ == "__main__":
         init_model(model_names[0], models[model_names[0]]).to(device),
         "/scratch/data/m23csa003/voxceleb/list_test_hard2.txt",
         "/scratch/data/m23csa003/voxceleb/wav/",
-        device
+        device,
+        n_samples=args.n_samples
     )
-
+    print("EER Full Utterences")
     print(f"model = {model_names[0]},EER = {EER}, minDCF = {minDCF}")

@@ -3,16 +3,19 @@ import torch.nn as nn
 from tools import *
 
 
-def eval_network(model, eval_list, eval_path,device):
+def eval_network(model, eval_list, eval_path,device,n_samples=-1):
     model.eval()
     files = []
     embeddings = {}
     lines = open(eval_list).read().splitlines()
 
+    i = 0
     for line in lines:
         files.append(line.split()[1])
         files.append(line.split()[2])
-
+        i+=1
+        if i== n_samples:
+            break
     setfiles = list(set(files))
     setfiles.sort()
 
@@ -40,6 +43,7 @@ def eval_network(model, eval_list, eval_path,device):
             # embedding_2 = F.normalize(embedding_2, p=2, dim=1).detach().cpu()
         embeddings[file] = embedding_1 #[embedding_1, embedding_2]
     scores, labels = [], []
+    i = 0
     for line in lines:
         # embedding_11, embedding_12 = embeddings[line.split()[1]]
         # embedding_21, embedding_22 = embeddings[line.split()[2]]
@@ -56,7 +60,9 @@ def eval_network(model, eval_list, eval_path,device):
         score = score.detach().numpy()
         scores.append(score)
         labels.append(int(line.split()[0]))
-
+        i+=1
+        if i== n_samples:
+            break
 
     # Coumpute EER and minDCF
     EER = tuneThresholdfromScore(scores, labels, [1, 0.1])[1]
