@@ -1,8 +1,8 @@
 import torch
 
 # import fire
-#from torchaudio import load
-#import torchaudio
+# from torchaudio import load
+# import torchaudio
 # from torchaudio.transforms import Resample
 from models.ecapa_tdnn import ECAPA_TDNN_SMALL
 
@@ -60,49 +60,6 @@ def init_model(model_name, checkpoint=None):
         model.load_state_dict(state_dict["model"], strict=False)
     return model
 
-# def evaluation(model_names, loader,device, checkpoints=None, n_samples=-1):
-#     models = torch.nn.ModuleList()
-#     for model_name in model_names:
-#         assert model_name in MODEL_LIST, "The model_name should be in {}".format(
-#             MODEL_LIST
-#         )
-#         print(model_name)
-#         model = init_model(model_name, checkpoints[model_name])
-#         model.eval()
-#         models.append(model)
-
-#     models = models.to(device)
-#     test_scores = {model_name: [] for model_name in model_names}
-#     test_labels = {model_name: [] for model_name in model_names}
-#     i = 0
-#     for wav1, wav2, sr, label, *_ in tqdm(loader):
-
-#         wav1 = wav1.squeeze(0)
-#         wav2 = wav2.squeeze(0)
-
-#         wav1 = wav1.to(device)
-#         wav2 = wav2.to(device)
-
-#         for model_name, model in zip(model_names, models):
-#             with torch.no_grad():
-#                 emb1 = model(wav1)
-#                 emb2 = model(wav2)
-
-#             sim = F.cosine_similarity(emb1, emb2)
-#             test_scores[model_name].append(sim)
-#             test_labels[model_name].append(label)
-#         i += 1
-#         if i == n_samples:
-#             break
-#     for model_name in model_names:
-#         equal_error_rate, threshold = eer(
-#             test_labels[model_name], test_scores[model_name]
-#         )
-#         print(
-#             f"model = {model_name}, equal error rate = {equal_error_rate}, threshold = {threshold}"
-#         )
-
-
 if __name__ == "__main__":
     # fire.Fire(verification)
     models = {
@@ -115,7 +72,7 @@ if __name__ == "__main__":
     #     r"/scratch/data/m23csa003/voxceleb",
     #     download=True,
     #     meta_url="/scratch/data/m23csa003/voxceleb/list_test_hard2.txt"
-        
+
     # )
     print("data_correctly parsed")
 
@@ -129,8 +86,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--n_samples", type=int, default=-1, help="Number of samples to evaluate"
     )
-    parser.add_argument('--no-cuda', action='store_true', default=False,
-                        help='disables CUDA training')
+    parser.add_argument(
+        "--no-cuda", action="store_true", default=False, help="disables CUDA training"
+    )
     args = parser.parse_args()
     model_names = args.model.split(" ")
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -148,14 +106,23 @@ if __name__ == "__main__":
     #     n_samples=args.n_samples,
     #     device = device,
     # )
+    test_file_dir = (
+        "/mnt/d/programming/datasets/VoxCeleb/list_test_hard2.txt"
+        if os.name == "posix"
+        else "D:/programming/datasets/VoxCeleb/list_test_hard2.txt"
+    )
 
-
+    test_wavs_dir = (
+        "/mnt/d/programming/datasets/VoxCeleb/wav/"
+        if os.name == "posix"
+        else "D:/programming/datasets/VoxCeleb/wav/"
+    )
     EER, minDCF = eval_network(
         init_model(model_names[0], models[model_names[0]]).to(device),
-        "/scratch/data/m23csa003/voxceleb/list_test_hard2.txt",
-        "/scratch/data/m23csa003/voxceleb/wav/",
+        test_file_dir,
+        test_wavs_dir,
         device,
-        n_samples=args.n_samples
+        n_samples=args.n_samples,
     )
     print("EER Full Utterences")
     print(f"model = {model_names[0]},EER = {EER}, minDCF = {minDCF}")

@@ -1,10 +1,10 @@
-__pycache__
-model_checkpoints
-*.log
 *.zip
 wav
 vox1_dev_wav_partaa
 vox1_dev_wav_partab
 vox1_dev_wav_partac
 vox1_dev_wav_partad
-
+fairseq
+model_checkpoints
+*.log
+__pycache__
