@@ -119,6 +119,7 @@ def train(model, train_loader,device, args):
     model.train()
     for epoch in range(epochs):
         epoch_loss = 0.0
+        i =0
         for data in tqdm(train_loader,dynamic_ncols=True):
             # print(list(data))
             wavs, utter_idx,labels = list(data)
@@ -132,6 +133,9 @@ def train(model, train_loader,device, args):
             loss.backward()
             optimizer.step()
             epoch_loss += loss.item()
+            i+=1
+            if i%100 == 0:
+                break
         epoch_loss /= len(train_loader)
 
         print(f"Epoch: {epoch}, Loss: {epoch_loss}")
@@ -153,7 +157,24 @@ def evaluate(model, device):
     
     return EER, minDCF
 
+def save_plots(history):
+    import matplotlib.pyplot as plt
 
+    plt.plot(history["train_loss"])
+    plt.title("Training Loss")
+    plt.savefig("train_loss.png")
+    plt.close()
+
+    plt.plot(history["EER"])
+    plt.title("EER")
+    plt.savefig("EER.png")
+    plt.close()
+
+    plt.plot(history["minDCF"])
+    plt.title("minDCF")
+    plt.savefig("minDCF.png")
+    plt.close()
+    
 if __name__ == "__main__":
     # fire.Fire(verification)
     models = {
@@ -190,6 +211,8 @@ if __name__ == "__main__":
         help="Dataset name",
         choices=["voxceleb", "kathbadh"],
     )
+    parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
+    parser.add_argument("--epochs", type=int, default=15, help="Number of epochs")
     args = parser.parse_args()
     model_names = args.model.split(" ")
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -242,12 +265,13 @@ if __name__ == "__main__":
             "max_timestep": 128000,
         }
     train_dataset = SpeakerVerifi_train(**train_config)
-    train_loader = get_train_dataloader(train_dataset,32, 1)
+    train_loader = get_train_dataloader(train_dataset,args.batch_size, 1)
     model = init_model(model_names[0], models[model_names[0]]).to(device)
     train_args = {
-        'epochs': 15,
+        'epochs': args.epochs,
         'loss_func': AAMSoftmaxLoss(256,train_dataset.speaker_num).to(device),
         'optimizer': torch.optim.Adam(model.parameters(), lr=5e-5),
 
     }
     history = train(model, train_loader, device, train_args)
+    save_plots(history)
