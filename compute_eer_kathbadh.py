@@ -5,29 +5,6 @@ from tools import *
 score_fn = nn.CosineSimilarity()
 
 
-import pickle
-from scipy.optimize import brentq
-from scipy.interpolate import interp1d
-from sklearn.metrics import roc_curve
-
-
-def EER(labels, scores):
-    """
-    labels: (N,1) value: 0,1
-
-    scores: (N,1) value: -1 ~ 1
-
-    """
-
-    fpr, tpr, thresholds = roc_curve(labels, scores)
-    s = interp1d(fpr, tpr)
-    a = lambda x: 1.0 - x - interp1d(fpr, tpr)(x)
-    eer = brentq(a, 0.0, 1.0)
-    thresh = interp1d(fpr, thresholds)(eer)
-
-    return eer, thresh
-
-
 def eval_network(model, eval_list, eval_path, device, n_samples=-1):
     model.eval()
     files = []
@@ -44,7 +21,7 @@ def eval_network(model, eval_list, eval_path, device, n_samples=-1):
     setfiles = list(set(files))
     setfiles.sort()
 
-    for idx, file in tqdm.tqdm(enumerate(setfiles), total=len(setfiles)):
+    for idx, file in tqdm.tqdm(enumerate(setfiles), total=len(setfiles),dynamic_ncols=True):
         audio, _ = soundfile.read(os.path.join(eval_path, file))
         # Full utterance
         data_1 = torch.FloatTensor(numpy.stack([audio], axis=0)).to(device)
@@ -74,10 +51,10 @@ def eval_network(model, eval_list, eval_path, device, n_samples=-1):
             break
 
     # Coumpute EER and minDCF
-    # EER = tuneThresholdfromScore(scores, labels, [1, 0.1])[1]
-    # fnrs, fprs, thresholds = ComputeErrorRates(scores, labels)
-    # minDCF, _ = ComputeMinDcf(fnrs, fprs, thresholds, 0.05, 1, 1)
+    EER = tuneThresholdfromScore(scores, labels, [1, 0.1])[1]
+    fnrs, fprs, thresholds = ComputeErrorRates(scores, labels)
+    minDCF, _ = ComputeMinDcf(fnrs, fprs, thresholds, 0.05, 1, 1)
 
-    # return EER, minDCF
+    return EER, minDCF
 
-    return EER(labels, scores)
+
