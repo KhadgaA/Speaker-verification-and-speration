@@ -1,19 +1,0 @@
-Copying Transcripts
-0it [00:00, ?it/s]0it [00:00, ?it/s]
-  0%|          | 0/2410 [00:00<?, ?it/s]Traceback (most recent call last):
-  File "/iitjhome/m23csa003/speech/kathbath/structure.py", line 74, in <module>
-    Parallel(n_jobs=-16, backend="multiprocessing")(
-  File "/iitjhome/m23csa003/.conda/envs/speech_env/lib/python3.10/site-packages/joblib/parallel.py", line 1863, in __call__
-    return output if self.return_generator else list(output)
-  File "/iitjhome/m23csa003/.conda/envs/speech_env/lib/python3.10/site-packages/joblib/parallel.py", line 1792, in _get_sequential_output
-    res = func(*args, **kwargs)
-  File "/iitjhome/m23csa003/speech/kathbath/structure.py", line 49, in structure_file
-    process_audio(filepath, folder + "/" + filename.replace(".m4a", ".wav"))
-  File "/iitjhome/m23csa003/speech/kathbath/structure.py", line 26, in process_audio
-    waveform, sample_rate = torchaudio.load(input_file)
-  File "/iitjhome/m23csa003/.conda/envs/speech_env/lib/python3.10/site-packages/torchaudio/backend/sox_io_backend.py", line 256, in load
-    return _fallback_load(filepath, frame_offset, num_frames, normalize, channels_first, format)
-  File "/iitjhome/m23csa003/.conda/envs/speech_env/lib/python3.10/site-packages/torchaudio/backend/sox_io_backend.py", line 30, in _fail_load
-    raise RuntimeError("Failed to load audio from {}".format(filepath))
-RuntimeError: Failed to load audio from /scratch/data/m23csa003/kathbadh/kb_data_clean_m4a/telugu/test_known/audio/844424930762250-1112-f.m4a
-  0%|          | 0/2410 [00:00<?, ?it/s]
