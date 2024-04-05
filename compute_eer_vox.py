@@ -2,6 +2,22 @@ import torch, sys, os, tqdm, numpy, soundfile, time, pickle
 import torch.nn as nn
 from tools import *
 
+def S_Norm(trials, znorm, tnorm):
+    '''
+    The symmetric normalization (S-norm) computes an average of
+    normalized scores from Z-norm and T-norm. S-norm is
+    symmetrical as s(e, t) = s(t, e), while the previously mentioned 
+    normalizations depend on the order of e and t.
+    '''
+    # Check if trials are the same in znorm and tnorm
+    znorm.sort_values('trials', inplace=True)
+    tnorm.sort_values('trials', inplace=True)
+    assert all(znorm['trials']) == all(tnorm['trials'])
+    
+    # Compute average of normalized scores from Z-norm and T-norm
+    trials['normalized_score'] = (znorm['normalized_score'] + tnorm['normalized_score'])/2
+    
+    return trials
 
 def eval_network(model, eval_list, eval_path,device,n_samples=-1):
     model.eval()
@@ -24,38 +40,23 @@ def eval_network(model, eval_list, eval_path,device,n_samples=-1):
         # Full utterance
         data_1 = torch.FloatTensor(numpy.stack([audio], axis=0)).to(device)
 
-        ## Spliited utterance matrix
-        # max_audio = 300 * 160 + 240
-        # if audio.shape[0] <= max_audio: 
-        #     shortage = max_audio - audio.shape[0]
-        #     audio = numpy.pad(audio, (0, shortage), "wrap")
-        # feats = []
-        # startframe = numpy.linspace(0, audio.shape[0] - max_audio, num=5)
-        # for asf in startframe:
-        #     feats.append(audio[int(asf) : int(asf) + max_audio])
-        # feats = numpy.stack(feats, axis=0).astype(float)
-        # data_2 = torch.FloatTensor(feats).to(device)
-        # Speaker embeddings
+
         with torch.no_grad():
             embedding_1 = model(data_1)
             embedding_1 = F.normalize(embedding_1, p=2, dim=1).detach().cpu()
-            # embedding_2 = model(data_2)
-            # embedding_2 = F.normalize(embedding_2, p=2, dim=1).detach().cpu()
+
         embeddings[file] = embedding_1 #[embedding_1, embedding_2]
     scores, labels = [], []
     i = 0
     for line in lines:
-        # embedding_11, embedding_12 = embeddings[line.split()[1]]
-        # embedding_21, embedding_22 = embeddings[line.split()[2]]
-        
+
         embedding_11 = embeddings[line.split()[1]]
         embedding_21 = embeddings[line.split()[2]]
         # Compute the scores
         score_1 = torch.mean(
             torch.matmul(embedding_11, embedding_21.T)
         )  # higher is positive
-        # score_2 = torch.mean(torch.matmul(embedding_12, embedding_22.T))
-        # score = (score_1 + score_2) / 2
+
         score = score_1
         score = score.detach().numpy()
         scores.append(score)
