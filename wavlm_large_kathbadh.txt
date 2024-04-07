@@ -1,0 +1,42 @@
+C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\s3prl\upstream\byol_s\byol_a\common.py:20: UserWarning: torchaudio._backend.set_audio_backend has been deprecated. With dispatcher enabled, this function is no-op. You can remove the function call.
+  torchaudio.set_audio_backend("sox_io")
+ESPnet is not installed, cannot use espnet_hubert upstream
+Using cache found in C:\Users\KHADGA JYOTH ALLI/.cache\torch\hub\s3prl_s3prl_main
+C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\nn\utils\weight_norm.py:28: UserWarning: torch.nn.utils.weight_norm is deprecated in favor of torch.nn.utils.parametrizations.weight_norm.
+  warnings.warn("torch.nn.utils.weight_norm is deprecated in favor of torch.nn.utils.parametrizations.weight_norm.")
+C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\nn\functional.py:5109: UserWarning: Support for mismatched key_padding_mask and attn_mask is deprecated. Use same type for both instead.
+  warnings.warn(
+data_correctly parsed
+cuda
+2379
+  0%|          | 0/75 [00:00<?, ?it/s]C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\s3prl\upstream\byol_s\byol_a\common.py:20: UserWarning: torchaudio._backend.set_audio_backend has been deprecated. With dispatcher enabled, this function is no-op. You can remove the function call.
+  torchaudio.set_audio_backend("sox_io")
+ESPnet is not installed, cannot use espnet_hubert upstream
+  0%|          | 0/75 [00:02<?, ?it/s]
+Traceback (most recent call last):
+  File "C:\Users\KHADGA JYOTH ALLI\Desktop\programming\Class Work\IITJ\Speech Understanding\Assignment 2\finetune_kathbadh.py", line 276, in <module>
+    history = train(model, train_loader, device, train_args)
+  File "C:\Users\KHADGA JYOTH ALLI\Desktop\programming\Class Work\IITJ\Speech Understanding\Assignment 2\finetune_kathbadh.py", line 123, in train
+    for data in tqdm(train_loader,dynamic_ncols=True):
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\tqdm\std.py", line 1181, in __iter__
+    for obj in iterable:
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\utils\data\dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\utils\data\dataloader.py", line 1346, in _next_data
+    return self._process_data(data)
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\utils\data\dataloader.py", line 1372, in _process_data
+    data.reraise()
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\_utils.py", line 722, in reraise
+    raise exception
+TypeError: Caught TypeError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\utils\data\_utils\worker.py", line 308, in _worker_loop
+    data = fetcher.fetch(index)
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\utils\data\_utils\fetch.py", line 51, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "C:\ProgramData\Anaconda3\envs\speech_env\lib\site-packages\torch\utils\data\_utils\fetch.py", line 51, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "C:\Users\KHADGA JYOTH ALLI\Desktop\programming\Class Work\IITJ\Speech Understanding\Assignment 2\dataset_kathbadh.py", line 132, in __getitem__
+    wav, _ = apply_effects_file(str(path), EFFECTS)
+TypeError: cannot unpack non-iterable NoneType object
+

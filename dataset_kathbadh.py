@@ -16,7 +16,12 @@ from librosa.util import find_files
 from joblib.parallel import Parallel, delayed
 from torch.utils.data import DataLoader, Dataset, DistributedSampler
 from torch.distributed import is_initialized
-from torchaudio.sox_effects import apply_effects_file
+import os
+if os.name == 'posix':
+    from torchaudio.sox_effects import apply_effects_file
+else:
+    
+    def apply_effects_file(*args):pass
 # from pydub import AudioSegment
 
 EFFECTS = [
