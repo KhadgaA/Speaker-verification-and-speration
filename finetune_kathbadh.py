@@ -134,7 +134,7 @@ def train(model, train_loader,device, args):
             optimizer.step()
             epoch_loss += loss.item()
             i+=1
-            if i%100 == 0:
+            if i%100 == args["n_samples"]:
                 break
         epoch_loss /= len(train_loader)
 
@@ -144,7 +144,7 @@ def train(model, train_loader,device, args):
         history["EER"].append(EER)
         history["minDCF"].append(minDCF)
         print(f"EER: {EER}, minDCF: {minDCF}")
-    
+    torch.save(model.state_dict(), f'{args.model}_kathbadh_finetune.pth') 
     return history
 def evaluate(model, device):
     EER, minDCF = eval_network(
@@ -224,7 +224,7 @@ if __name__ == "__main__":
     if args.dataset == "voxceleb":
         from compute_eer_vox import eval_network
 
-        if pc == "hpclogin.iitj.ac.in":
+        if  "iitj.ac.in" in pc:
             test_file_dir = "/scratch/data/m23csa003/voxceleb/list_test_hard2.txt"
             test_wavs_dir = "/scratch/data/m23csa003/voxceleb/wav/"
         elif pc == "Khadga-Laptop":
@@ -240,14 +240,13 @@ if __name__ == "__main__":
 
     elif args.dataset == "kathbadh":
         from compute_eer_kathbadh import eval_network
-
-        if pc == "hpclogin.iitj.ac.in":
-            test_file_dir = (
+            
+        test_file_dir = (
                 "/scratch/data/m23csa003/kathbadh/meta_data/telugu/test_known_data.txt"
             )
-            test_wavs_dir = "/scratch/data/m23csa003/kathbadh/kb_data_clean_wav/telugu/test_known/audio/"
-            train_file_dir = "/scratch/data/m23csa003/kathbadh/valid_audio/kb_data_clean_wav/telugu/valid/audio"
-        elif pc == "Khadga-Laptop":
+        test_wavs_dir = "/scratch/data/m23csa003/kathbadh/kb_data_clean_wav/telugu/test_known/audio/"
+        train_file_dir = "/scratch/data/m23csa003/kathbadh/valid_audio/kb_data_clean_wav/telugu/valid/audio"
+        if pc == "Khadga-Laptop":
             if os.name == "posix":
                 test_file_dir = "/mnt/d/programming/datasets/kathbadh/meta_data/telugu/test_known_data.txt"
                 test_wavs_dir = "/mnt/d/programming/datasets/kathbadh/kb_data_clean_wav/telugu/test_known/audio/"
@@ -270,7 +269,8 @@ if __name__ == "__main__":
     train_args = {
         'epochs': args.epochs,
         'loss_func': AAMSoftmaxLoss(256,train_dataset.speaker_num).to(device),
-        'optimizer': torch.optim.Adam(model.parameters(), lr=5e-5),
+        'optimizer': torch.optim.Adam(model.parameters(), lr=5e-6),
+        'n_samples': args.n_samples
 
     }
     history = train(model, train_loader, device, train_args)
