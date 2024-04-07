@@ -8,3 +8,4 @@ fairseq
 model_checkpoints
 *.log
 __pycache__
+.wav_lengths/telugu_length.pt

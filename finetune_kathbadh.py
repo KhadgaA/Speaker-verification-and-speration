@@ -144,7 +144,7 @@ def train(model, train_loader,device, args):
         history["EER"].append(EER)
         history["minDCF"].append(minDCF)
         print(f"EER: {EER}, minDCF: {minDCF}")
-    torch.save(model.state_dict(), f'{args.model}_kathbadh_finetune.pth') 
+    torch.save(model.state_dict(), f'{args["model"]}_kathbadh_finetune.pth') 
     return history
 def evaluate(model, device):
     EER, minDCF = eval_network(
@@ -263,15 +263,18 @@ if __name__ == "__main__":
             "meta_data": "",
             "max_timestep": 128000,
         }
+    print(train_config)
+   
     train_dataset = SpeakerVerifi_train(**train_config)
     train_loader = get_train_dataloader(train_dataset,args.batch_size, 1)
     model = init_model(model_names[0], models[model_names[0]]).to(device)
+
     train_args = {
         'epochs': args.epochs,
         'loss_func': AAMSoftmaxLoss(256,train_dataset.speaker_num).to(device),
         'optimizer': torch.optim.Adam(model.parameters(), lr=5e-6),
-        'n_samples': args.n_samples
-
+        'n_samples': args.n_samples,
+        'model':args.model
     }
     history = train(model, train_loader, device, train_args)
     save_plots(history)
