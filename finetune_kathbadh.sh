@@ -19,5 +19,4 @@ eval "$(conda shell.bash hook)"
 conda activate speech_env
 export TORCHAUDIO_USE_BACKEND_DISPATCHER=1 
 
-python finetune_kathbadh.py --model wavlm_large --dataset kathbadh  &> wavlm_large_kathbadh_finetune_lr6.txt 
-
+python finetune_kathbadh.py --model wavlm_large --dataset kathbadh  &> wavlm_large_kathbadh_finetune_lr6.txt
