@@ -9,12 +9,17 @@ from models.ecapa_tdnn import ECAPA_TDNN_SMALL
 import torch.nn.functional as F
 
 from tqdm import tqdm
-from compute_eer import eer
-from compute_eer_ecapa import eval_network
+
+# from compute_eer import eer
+
 
 # from compute_ecapa_multiprocess import eval_network
 import argparse
 import os
+
+import socket
+
+pc = socket.gethostname()
 
 MODEL_LIST = [
     "ecapa_tdnn",
@@ -60,6 +65,7 @@ def init_model(model_name, checkpoint=None):
         model.load_state_dict(state_dict["model"], strict=False)
     return model
 
+
 if __name__ == "__main__":
     # fire.Fire(verification)
     models = {
@@ -89,6 +95,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--no-cuda", action="store_true", default=False, help="disables CUDA training"
     )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default="kathbadh",
+        help="Dataset name",
+        choices=["voxceleb", "kathbadh"],
+    )
     args = parser.parse_args()
     model_names = args.model.split(" ")
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -97,26 +110,40 @@ if __name__ == "__main__":
         print(device)
     else:
         device = torch.device("cpu")
-    # print(chkpts)
-    # for model_name, chkpt in models.items():
-    # evaluation(
-    #     model_names=model_names,
-    #     checkpoints=models,
-    #     loader=test_loader,
-    #     n_samples=args.n_samples,
-    #     device = device,
-    # )
-    test_file_dir = (
-        "/mnt/d/programming/datasets/VoxCeleb/list_test_hard2.txt"
-        if os.name == "posix"
-        else "D:/programming/datasets/VoxCeleb/list_test_hard2.txt"
-    )
+    if args.dataset == "voxceleb":
+        from compute_eer_vox import eval_network
 
-    test_wavs_dir = (
-        "/mnt/d/programming/datasets/VoxCeleb/wav/"
-        if os.name == "posix"
-        else "D:/programming/datasets/VoxCeleb/wav/"
-    )
+        if pc == "hpclogin.iitj.ac.in":
+            test_file_dir = "/scratch/data/m23csa003/voxceleb/list_test_hard2.txt"
+            test_wavs_dir = "/scratch/data/m23csa003/voxceleb/wav/"
+        elif pc == "Khadga-Laptop":
+            if os.name == "posix":
+                test_file_dir = (
+                    "/mnt/d/programming/datasets/VoxCeleb/list_test_hard2.txt"
+                )
+                test_wavs_dir = "/mnt/d/programming/datasets/VoxCeleb/wav/"
+            else:
+                test_file_dir = "D:/programming/datasets/VoxCeleb/list_test_hard2.txt"
+                test_wavs_dir = "D:/programming/datasets/VoxCeleb/wav/"
+
+    # "D:\programming\datasets\kathbadh\meta_data\telugu\test_known_data.txt"
+    # D:\programming\datasets\kathbadh\kb_data_clean_wav\telugu\test_known\audio
+    elif args.dataset == "kathbadh":
+        from compute_eer_kathbadh import eval_network
+
+        if pc == "hpclogin.iitj.ac.in":
+            test_file_dir = (
+                "/scratch/data/m23csa003/kathbadh/meta_data/telugu/test_known_data.txt"
+            )
+            test_wavs_dir = "/scratch/data/m23csa003/kathbadh/kb_data_clean_wav/telugu/test_known/audio/"
+        elif pc == "Khadga-Laptop":
+            if os.name == "posix":
+                test_file_dir = "/mnt/d/programming/datasets/kathbadh/meta_data/telugu/test_known_data.txt"
+                test_wavs_dir = "/mnt/d/programming/datasets/kathbadh/kb_data_clean_wav/telugu/test_known/audio/"
+            else:
+                test_file_dir = "D:/programming/datasets/kathbadh/meta_data/telugu/test_known_data.txt"
+                test_wavs_dir = "D:/programming/datasets/kathbadh/kb_data_clean_wav/telugu/test_known/audio/"
+
     EER, minDCF = eval_network(
         init_model(model_names[0], models[model_names[0]]).to(device),
         test_file_dir,

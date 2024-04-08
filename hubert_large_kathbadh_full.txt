@@ -1,0 +1,4 @@
+data_correctly parsed
+cuda
+EER Full Utterences
+model = hubert_large,EER = 3.8727579827877445, minDCF = 0.3622916308936382

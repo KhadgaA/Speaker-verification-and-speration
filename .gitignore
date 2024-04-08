@@ -8,3 +8,5 @@ fairseq
 model_checkpoints
 *.log
 __pycache__
+*.pt
+*.pth

@@ -1,0 +1,4 @@
+data_correctly parsed
+cuda
+EER Full Utterences
+model = wavlm_base_plus,EER = 3.708124452932283, minDCF = 0.36920557672853627
